@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title')->unique();
             $table->string('type')->nullable();
-            $table->string('path');
-            $table->string('public_url');
+            $table->string('path')->nullable();
+            $table->string('public_url')->nullable();
             $table->longText('transcript')->nullable();
             $table->timestamps();
         });

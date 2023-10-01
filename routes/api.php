@@ -15,9 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('video')->group(function () {
-    Route::get('/all', [VideoController::class, 'index'])->name('videos.index');
-    Route::post('/store', [VideoController::class, 'store'])->name('videos.store');
-    Route::get('/{video}', [VideoController::class, 'show'])->name('videos.show');
-    Route::delete('/{video}', [VideoController::class, 'destroy'])->name('videos.destroy');
-});
+Route::get('videos', [VideoController::class, 'index']);
+Route::get('/video/{id}', [VideoController::class, 'show']);
+Route::post('video/stream', [VideoController::class, 'stream']);
+Route::get('video/end-stream/{id}', [VideoController::class, 'stop']);
+// Route::delete('/{id}', [VideoController::class, 'destroy']);

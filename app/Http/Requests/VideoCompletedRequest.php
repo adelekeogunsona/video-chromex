@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreVideoRequest extends FormRequest
+class VideoCompletedRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,6 @@ class StoreVideoRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'blob' => 'required|file|max:10000', // 10MB
         ];
     }
 }
