@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use \FFMpeg\Format\Video\WebM;
 use App\Http\Requests\StoreVideoRequest;
 use App\Http\Resources\VideoResource;
 use App\Models\Video;
-use FFMpeg\FFMpeg;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class VideoController extends Controller
@@ -217,9 +216,7 @@ class VideoController extends Controller
     public function stream(StoreVideoRequest $request)
     {
         $validated = (object) $request->validated();
-
-        $chunk_content = file_get_contents($validated->blob);
-        Storage::append('public/temp/' . $validated->title . '/video.bin', $chunk_content);
+        $chunk_content = base64_encode(file_get_contents($validated->blob));
 
         // check if video doesn't exist
         if (!Video::where('title', $validated->title)->exists()) {
@@ -229,6 +226,21 @@ class VideoController extends Controller
                 'path' => null,
                 'public_url' => null,
             ]);
+
+            // save the chunk
+            Storage::put('public/temp/' . $video->title . '/video.bin', $chunk_content);
+        } else {
+            $video = Video::where('title', $validated->title)->first();
+
+            // check if video is already completed
+            if ($video->path !== null) {
+                return response()->json([
+                    'message' => 'Video already completed.',
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            // append the chunk
+            Storage::append('public/temp/' . $video->title . '/video.bin', $chunk_content);
         }
 
         return response()->json([
@@ -333,25 +345,22 @@ class VideoController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        // convert the .bin file to .webm
-        $video_path = 'public/temp/' . $video->title . '/video.bin';
-        $video_webm_path = 'public/videos/' . $video->title . '/video.webm';
-        $video_webm_url = Storage::url($video_webm_path);
+        // decode the bin file
+        $bin_content = base64_decode(Storage::get('public/temp/' . $video->title . '/video.bin'));
 
-        // load ffmpeg binaries path
-        $ffmpeg = FFMpeg::create([
-            'ffmpeg.binaries' => 'C:/FFmpeg/bin/ffmpeg.exe',
-            // changing this later
-            'ffprobe.binaries' => 'C:/FFmpeg/bin/ffprobe.exe'
-        ]);
+        // generate a random name for the video
+        $video_name = md5(Str::random(32) . time()) . '.webm';
 
-        $video = $ffmpeg->open(Storage::path($video_path));
-        $video->save(new WebM(), Storage::path($video_webm_path));
+        // create a new file and put the bin content
+        Storage::put('public/videos/' . $video_name, $bin_content);
+
+        // get the path of the video
+        $path = storage_path('app/public/videos/' . $video_name);
 
         // update the video record
-        Video::where('title', $title)->update([
-            'path' => $video_webm_path,
-            'public_url' => $video_webm_url,
+        $video->update([
+            'path' => $path,
+            'public_url' => Storage::url('public/videos/' . $video_name),
         ]);
 
         return response()->json([
