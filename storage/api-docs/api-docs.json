@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "http://video-chromex.test/api",
+            "url": "https://chromex.adeleke.tech/api",
             "description": "API Server"
         }
     ],
