@@ -18,5 +18,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('videos', [VideoController::class, 'index']);
 Route::get('/video/{id}', [VideoController::class, 'show']);
 Route::post('video/stream', [VideoController::class, 'stream']);
-Route::get('video/end-stream/{title}', [VideoController::class, 'stop']);
+Route::get('video/end-stream/{id}', [VideoController::class, 'stop']);
 // Route::delete('/{id}', [VideoController::class, 'destroy']);
