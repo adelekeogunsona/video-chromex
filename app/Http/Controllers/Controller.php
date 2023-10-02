@@ -14,7 +14,7 @@ use Illuminate\Routing\Controller as BaseController;
  * @OA\Info(
  *     title="API DOCUMENTATION",
  *     version="0.1",
- *     description="This is the API documentation for the Video Streaming App.",
+ *     description="This is the API documentation for the Video Streaming Chrome Extension.",
  * ),
  * @OA\PathItem(path="/"),
  */

@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "API DOCUMENTATION",
-        "description": "This is the API documentation for the Video Streaming App.",
+        "description": "This is the API documentation for the Video Streaming Chrome Extension.",
         "version": "0.1"
     },
     "servers": [
@@ -169,7 +169,8 @@
                                         "type": "string"
                                     },
                                     "blob": {
-                                        "type": "file"
+                                        "type": "file",
+                                        "format": "webm"
                                     }
                                 },
                                 "type": "object"
