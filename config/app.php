@@ -186,4 +186,7 @@ return [
         'FFMpeg' => ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::class,
     ])->toArray(),
 
+    // Whisper API
+    'whisperapi' => env('WHISPER_API_KEY'),
+
 ];

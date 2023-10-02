@@ -169,7 +169,8 @@
                                         "type": "string"
                                     },
                                     "blob": {
-                                        "type": "file"
+                                        "type": "file",
+                                        "format": "webm"
                                     }
                                 },
                                 "type": "object"

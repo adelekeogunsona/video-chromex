@@ -8,6 +8,7 @@ use App\Models\Video;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Http;
 
 class VideoController extends Controller
 {
@@ -68,7 +69,8 @@ class VideoController extends Controller
      */
     public function index()
     {
-        $videos = Video::all();
+        // all completed videos
+        $videos = Video::whereNotNull('path')->get();
 
         if ($videos->isEmpty()) {
             return response()->json([
@@ -185,6 +187,7 @@ class VideoController extends Controller
      *                 @OA\Property(
      *                     property="blob",
      *                     type="file",
+     *                     format="webm"
      *                 )
      *             )
      *         )
@@ -362,6 +365,30 @@ class VideoController extends Controller
             'path' => $path,
             'public_url' => Storage::url('public/videos/' . $video_name),
         ]);
+
+        // delete the bin file
+        Storage::delete('public/temp/' . $video->title);
+
+        // // get the video content
+        // $video_content = file_get_contents($path);
+
+        // $apiURL = 'https://transcribe.whisperapi.com';
+        // $headers = [
+        //     'Authorization' => 'Bearer '.config('app.whisperapi')
+        // ];
+
+        // $response = Http::withHeaders($headers)->attach('file',$video_content)->post($apiURL, [
+        //     'diarization' => "false",
+        //     'fileType' => 'mp4',
+        //     'task' => 'transcribe'
+        // ]);
+
+        // $data= $response->json();
+
+        // // update the video record
+        // $video->update([
+        //     'transcript' => $data['text']
+        // ]);
 
         return response()->json([
             'message' => 'Video completed successfully.',
