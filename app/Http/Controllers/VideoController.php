@@ -367,28 +367,10 @@ class VideoController extends Controller
         ]);
 
         // delete the bin file
-        Storage::delete('public/temp/' . $video->title);
+        Storage::delete('public/temp/' . $video->title . '/video.bin');
 
-        // // get the video content
-        // $video_content = file_get_contents($path);
-
-        // $apiURL = 'https://transcribe.whisperapi.com';
-        // $headers = [
-        //     'Authorization' => 'Bearer '.config('app.whisperapi')
-        // ];
-
-        // $response = Http::withHeaders($headers)->attach('file',$video_content)->post($apiURL, [
-        //     'diarization' => "false",
-        //     'fileType' => 'mp4',
-        //     'task' => 'transcribe'
-        // ]);
-
-        // $data= $response->json();
-
-        // // update the video record
-        // $video->update([
-        //     'transcript' => $data['text']
-        // ]);
+        // transcribe the video
+        $this->transcribeVideo($path, $title);
 
         return response()->json([
             'message' => 'Video completed successfully.',
@@ -419,4 +401,22 @@ class VideoController extends Controller
     //         'message' => 'Video deleted successfully.',
     //     ], Response::HTTP_OK);
     // }
+
+    private function transcribeVideo($path, $title) {
+
+        $video = Video::where('title', $title)->first();
+
+        $apiURL = 'https://api.openai.com/v1/audio/transcriptions';
+        $headers = [
+            'Authorization' => 'Bearer '.config('app.whisperapi')
+        ];
+
+        $response = Http::withHeaders($headers)->attach('file', fopen($path, 'r'))->post($apiURL, [
+            'model' => 'whisper-1'
+        ]);
+
+        $data= $response->json();
+
+        return $data['text'];
+    }
 }
